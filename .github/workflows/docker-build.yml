@@ -7,10 +7,7 @@
 name: Build nfs-ganesha base container
 
 on:
-  push:
-    paths:
-      - "deploy/base/Dockerfile"
-      - ".github/workflows/docker-build.yml"
+  workflow_dispatch:
 
 jobs:
   docker:
