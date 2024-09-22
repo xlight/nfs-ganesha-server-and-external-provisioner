@@ -273,14 +273,15 @@ func (p *nfsProvisioner) createVolume(options controller.ProvisionOptions) (volu
 		return volume{}, &controller.IgnoredError{Reason: fmt.Sprintf("export limit of %v has been reached", p.maxExports)}
 	}
 
-	path := path.Join(p.exportDir, options.PVName)
+	pvDir := strings.Join([]string{options.PVC.Namespace, options.PVC.Name, options.PVName}, "-")
 
-	err = p.createDirectory(options.PVName, gid)
+	path := path.Join(p.exportDir, pvDir)
+	err = p.createDirectory(pvDir, gid)
 	if err != nil {
 		return volume{}, fmt.Errorf("error creating directory for volume: %v", err)
 	}
 
-	exportBlock, exportID, err := p.createExport(options.PVName, rootSquash)
+	exportBlock, exportID, err := p.createExport(pvDir, rootSquash)
 	if err != nil {
 		os.RemoveAll(path)
 		return volume{}, fmt.Errorf("error creating export for volume: %v", err)
